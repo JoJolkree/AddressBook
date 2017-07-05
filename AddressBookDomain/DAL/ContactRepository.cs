@@ -1,37 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using AddressBook.Domain;
+using AddressBookDomain.Domain;
 
-namespace AddressBook.DAL
+namespace AddressBookDomain.DAL
 {
     public class ContactRepository
     {
         private readonly AddressBookContext _addressBookDb;
-        private readonly UserRepository _userRepo;
-        private readonly CallsRepository _callsRepo;
 
-        public ContactRepository(AddressBookContext addressBookDb, UserRepository userRepo, CallsRepository callsRepo)
+        public ContactRepository(AddressBookContext addressBookDb)
         {
             _addressBookDb = addressBookDb;
-            _userRepo = userRepo;
-            _callsRepo = callsRepo;
         }
 
         public void Add(User user, string name ="", string phoneNumber="", string email="", string note="")
         {
             var contact = new Contact(user, name, phoneNumber, email, note);
-            Add(contact);
-            _userRepo.AddContact(user, contact);
+            Add(user, contact);
         }
 
-        public void Add(Contact contact)
+        public void Add(User user, Contact contact)
         {
             _addressBookDb.Contacts.Add(contact);
+            _addressBookDb.Users.First(x => Equals(x, user)).Contacts.Add(contact);
+            _addressBookDb.SaveChanges();
         }
 
         public void Remove(Contact contact)
         {
             _addressBookDb.Contacts.Remove(contact);
+            _addressBookDb.SaveChanges();
         }
 
         public IEnumerable<Contact> SearchByName(string query)
@@ -45,11 +43,16 @@ namespace AddressBook.DAL
             contact.PhoneNumber = newPhoneNumber ?? contact.PhoneNumber;
             contact.Email = newEmail ?? contact.Email;
             contact.Note = newNote ?? contact.Note;
+
+            _addressBookDb.Contacts.Remove(contact);
+            _addressBookDb.Contacts.Add(contact);
+            _addressBookDb.SaveChanges();
         }
 
         public void Call(Contact contact)
         {
-            _callsRepo.Add(contact);
-        }
+            _addressBookDb.Calls.Add(new Call(contact));
+            _addressBookDb.SaveChanges();
+;        }
     }
 }

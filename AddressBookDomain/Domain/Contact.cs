@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AddressBook.Domain
+namespace AddressBookDomain.Domain
 {
     public class Contact
     {
@@ -12,6 +12,8 @@ namespace AddressBook.Domain
 
         public List<Call> Calls { get; set; }
         public User User { get; set; }
+
+        public Contact() { }
 
         public Contact(User user, string name = "", string phoneNumber = "", string email = "", string note = "")
         {

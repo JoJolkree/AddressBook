@@ -1,12 +1,14 @@
 ﻿using System;
 
-namespace AddressBook.Domain
+namespace AddressBookDomain.Domain
 {
     public class Call
     {
         public int Id { get; set; }
         public DateTime Created { get; set; }
         public Contact Contact { get; set; }
+
+        public Call() { }
 
         public Call(Contact contact)
         {

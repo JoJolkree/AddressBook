@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AddressBook.Domain
+namespace AddressBookDomain.Domain
 {
     public class User
     {
@@ -10,9 +10,7 @@ namespace AddressBook.Domain
         public string Password { get; set; }
         public List<Contact> Contacts { get; set; }
 
-        public User()
-        {
-        }
+        public User() { }
 
         public User(string login, string password)
         {

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using AddressBook.Domain;
-using AddressBook.Exceptions;
+using AddressBookDomain.Domain;
+using AddressBookDomain.Exceptions;
 
-namespace AddressBook.DAL
+namespace AddressBookDomain.DAL
 {
     public class UserRepository
     {
@@ -16,8 +16,9 @@ namespace AddressBook.DAL
         public void Add(User user)
         {
             if(_addressBookDb.Users.Contains(user))
-                throw new UserAlreadyExists();
+                throw new UserAlreadyExistsException();
             _addressBookDb.Users.Add(user);
+            _addressBookDb.SaveChangesAsync();
         }
 
         public void Add(string login, string password)
@@ -43,11 +44,15 @@ namespace AddressBook.DAL
         public void Delete(User user)
         {
             _addressBookDb.Users.Remove(user);
+            _addressBookDb.SaveChangesAsync();
         }
 
-        internal void AddContact(User user, Contact contact)
+        public User GetUserByLogin(string login)
         {
-            user.Contacts.Add(contact);
+            var user = _addressBookDb.Users.FirstOrDefault(x => x.Login == login);
+            if(user == null)
+                throw new UserNotFoundException();
+            return user;
         }
     }
 }
