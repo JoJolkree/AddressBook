@@ -8,14 +8,20 @@ namespace AddressBookDomain.Domain
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
+        public UserType Type { get; set; }
         public List<Contact> Contacts { get; set; }
 
-        public User() { }
+        public User()
+        {
+            Contacts = new List<Contact>();
+        }
 
-        public User(string login, string password)
+        public User(string login, string password, UserType type)
         {
             Login = login;
             Password = password;
+            Type = type;
+            Contacts = new List<Contact>();
         }
 
         public override string ToString()
@@ -40,5 +46,11 @@ namespace AddressBookDomain.Domain
         {
             return (Login != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(Login) : 0);
         }
+    }
+
+    public enum UserType
+    {
+        User,
+        Admin
     }
 }

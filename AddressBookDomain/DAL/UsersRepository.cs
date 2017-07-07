@@ -4,11 +4,11 @@ using AddressBookDomain.Exceptions;
 
 namespace AddressBookDomain.DAL
 {
-    public class UserRepository
+    public class UsersRepository
     {
         private readonly AddressBookContext _addressBookDb;
 
-        public UserRepository(AddressBookContext addressBookDb)
+        public UsersRepository(AddressBookContext addressBookDb)
         {
             _addressBookDb = addressBookDb;
         }
@@ -21,9 +21,9 @@ namespace AddressBookDomain.DAL
             _addressBookDb.SaveChangesAsync();
         }
 
-        public void Add(string login, string password)
+        public void Add(string login, string password, UserType type)
         {
-            var user = new User(login, password);
+            var user = new User(login, password, type);
             Add(user);
         }
 

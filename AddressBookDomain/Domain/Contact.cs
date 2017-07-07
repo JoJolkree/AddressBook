@@ -13,7 +13,10 @@ namespace AddressBookDomain.Domain
         public List<Call> Calls { get; set; }
         public User User { get; set; }
 
-        public Contact() { }
+        public Contact()
+        {
+            Calls = new List<Call>();
+        }
 
         public Contact(User user, string name = "", string phoneNumber = "", string email = "", string note = "")
         {
@@ -22,6 +25,7 @@ namespace AddressBookDomain.Domain
             PhoneNumber = phoneNumber;
             Email = email;
             Note = note;
+            Calls = new List<Call>();
         }
 
         protected bool Equals(Contact other)

@@ -11,34 +11,13 @@ using Moq;
 namespace AddressBookDomain.Tests
 {
     [TestClass]
-    public class UserRepositoryTests
+    public class UsersRepositoryTests
     {
-        [TestMethod]
-        public void AddAndSaveUserTest()
-        {
-            var data = new List<User> { new User("test", "test") }.AsQueryable();
-
-            var mockSet = new Mock<DbSet<User>>();
-            mockSet.As<IQueryable<User>>().Setup(m => m.Provider).Returns(data.Provider);
-            mockSet.As<IQueryable<User>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<User>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(() => data.GetEnumerator());
-
-            var mockContext = new Mock<AddressBookContext>();
-            mockContext.Setup(m => m.Users).Returns(mockSet.Object);
-
-            var userRepo = new UserRepository(mockContext.Object);
-            userRepo.Add("test2", "test");
-
-            mockSet.Verify(m => m.Add(It.IsAny<User>()), Times.Once);
-            mockContext.Verify(m => m.SaveChanges(), Times.Once);
-        }
-
         [TestMethod]
         public void TestAddingUsersToDb()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase();
+            builder.UseInMemoryDatabase(databaseName: "TestAddingUsersToDb");
             var options = builder.Options;
 
             using (var context = new AddressBookContext(options))
@@ -46,18 +25,18 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
-                userRepo.Add("test", "test");
-                userRepo.Add(new User("test2", "test2"));
+                var userRepo = new UsersRepository(context);
+                userRepo.Add("test", "test", UserType.User);
+                userRepo.Add(new User("test2", "test2", UserType.Admin));
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
+                var userRepo = new UsersRepository(context);
                 var user1 = userRepo.GetUserByLogin("test");
                 var user2 = userRepo.GetUserByLogin("test2");
-                Assert.AreEqual(user1, new User("test", "test"));
-                Assert.AreEqual(user2, new User("test2", ""));
+                Assert.AreEqual(user1, new User("test", "test", UserType.User));
+                Assert.AreEqual(user2, new User("test2", "", UserType.Admin));
             }
         }
 
@@ -65,7 +44,7 @@ namespace AddressBookDomain.Tests
         public void TestDeleteUser()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase();
+            builder.UseInMemoryDatabase(databaseName: "TestDeleteUser");
             var options = builder.Options;
             var idToDelete = 0;
             User user3;
@@ -77,25 +56,25 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
-                userRepo.Add("test", "test");
-                userRepo.Add("test2", "test");
-                user3 = new User("test3", "Test");
+                var userRepo = new UsersRepository(context);
+                userRepo.Add("test", "test", UserType.Admin);
+                userRepo.Add("test2", "test", UserType.User);
+                user3 = new User("test3", "Test", UserType.User);
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
-                Assert.AreEqual(userRepo.GetUserByLogin("test"), new User("test", ""));
+                var userRepo = new UsersRepository(context);
+                Assert.AreEqual(userRepo.GetUserByLogin("test"), new User("test", "", UserType.Admin));
                 var user2 = userRepo.GetUserByLogin("test2");
                 idToDelete = user2.Id;
-                Assert.AreEqual(user2, new User("test2", ""));
-                Assert.AreEqual(user3, new User("Test3", ""));
+                Assert.AreEqual(user2, new User("test2", "", UserType.Admin));
+                Assert.AreEqual(user3, new User("Test3", "", UserType.User));
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
+                var userRepo = new UsersRepository(context);
                 userRepo.Delete("test");
                 userRepo.Delete(idToDelete);
                 userRepo.Delete(user3);
@@ -103,7 +82,7 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UserRepository(context);
+                var userRepo = new UsersRepository(context);
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test"));
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test2"));
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test3"));
