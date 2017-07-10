@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
 
@@ -18,7 +19,7 @@ namespace AddressBookDomain.DAL
             if(_addressBookDb.Users.Contains(user))
                 throw new UserAlreadyExistsException();
             _addressBookDb.Users.Add(user);
-            _addressBookDb.SaveChangesAsync();
+            _addressBookDb.SaveChanges();
         }
 
         public void Add(string login, string password, UserType type)
@@ -49,9 +50,16 @@ namespace AddressBookDomain.DAL
 
         public User GetUserByLogin(string login)
         {
-            var user = _addressBookDb.Users.FirstOrDefault(x => x.Login == login);
+            var user = _addressBookDb.Users.FirstOrDefault(x => string.Equals(x.Login, login, StringComparison.OrdinalIgnoreCase));
             if(user == null)
                 throw new UserNotFoundException();
+            return user;
+        }
+
+        public User GetUserByLoginAndPassword(string login, string password)
+        {
+            var user = _addressBookDb.Users.FirstOrDefault(x => string.Equals(x.Login, login,
+                                                                    StringComparison.OrdinalIgnoreCase) && x.Password == password);
             return user;
         }
     }

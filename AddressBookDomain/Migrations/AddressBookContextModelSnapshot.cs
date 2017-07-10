@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using AddressBookDomain.Domain;
 
-namespace AddressBook.Migrations
+namespace AddressBookDomain.Migrations
 {
     [DbContext(typeof(AddressBookContext))]
     partial class AddressBookContextModelSnapshot : ModelSnapshot
@@ -16,7 +16,7 @@ namespace AddressBook.Migrations
                 .HasAnnotation("ProductVersion", "1.1.2")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AddressBook.Domain.Call", b =>
+            modelBuilder.Entity("AddressBookDomain.Domain.Call", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -32,7 +32,7 @@ namespace AddressBook.Migrations
                     b.ToTable("Calls");
                 });
 
-            modelBuilder.Entity("AddressBook.Domain.Contact", b =>
+            modelBuilder.Entity("AddressBookDomain.Domain.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -54,7 +54,7 @@ namespace AddressBook.Migrations
                     b.ToTable("Contacts");
                 });
 
-            modelBuilder.Entity("AddressBook.Domain.User", b =>
+            modelBuilder.Entity("AddressBookDomain.Domain.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -63,21 +63,23 @@ namespace AddressBook.Migrations
 
                     b.Property<string>("Password");
 
+                    b.Property<int>("UserType");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("AddressBook.Domain.Call", b =>
+            modelBuilder.Entity("AddressBookDomain.Domain.Call", b =>
                 {
-                    b.HasOne("AddressBook.Domain.Contact", "Contact")
+                    b.HasOne("AddressBookDomain.Domain.Contact", "Contact")
                         .WithMany("Calls")
                         .HasForeignKey("ContactId");
                 });
 
-            modelBuilder.Entity("AddressBook.Domain.Contact", b =>
+            modelBuilder.Entity("AddressBookDomain.Domain.Contact", b =>
                 {
-                    b.HasOne("AddressBook.Domain.User", "User")
+                    b.HasOne("AddressBookDomain.Domain.User", "User")
                         .WithMany("Contacts")
                         .HasForeignKey("UserId");
                 });

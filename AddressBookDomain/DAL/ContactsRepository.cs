@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,24 @@ namespace AddressBookDomain.DAL
             _addressBookDb.SaveChanges();
         }
 
+        public IEnumerable<Contact> GetAllContactsForUser(string login)
+        {
+            return _addressBookDb
+                .Users
+                .Include(x => x.Contacts)
+                .First(x => string.Equals(x.Login, login, StringComparison.OrdinalIgnoreCase))
+                .Contacts;
+        }
+
+        public IEnumerable<Contact> GetAllContactsForUser(User user)
+        {
+            return _addressBookDb
+                .Users
+                .Include(x => x.Contacts)
+                .First(x => Equals(x, user))
+                .Contacts;
+        }
+
         public IEnumerable<Contact> SearchByName(User user, string query)
         {
             return _addressBookDb
@@ -67,6 +86,11 @@ namespace AddressBookDomain.DAL
             _addressBookDb.Calls.Add(call);
             contact.Calls.Add(call);
             _addressBookDb.SaveChanges();
-;        }
+;       }
+
+        public Contact GetContactById(int id)
+        {
+            return _addressBookDb.Contacts.First(x => x.Id == id);
+        }
     }
 }

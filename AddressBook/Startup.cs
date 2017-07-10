@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AddressBook
@@ -31,6 +34,14 @@ namespace AddressBook
         {
             var connection = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AddressBookContext>(options => options.UseSqlServer(connection));
+
+            services.AddScoped<UsersRepository, UsersRepository>();
+            services.AddScoped<ContactsRepository, ContactsRepository>();
+            services.AddScoped<CallsRepository, CallsRepository>();
+
+            services.AddTransient<User, User>();
+            services.AddTransient<Contact, Contact>();
+            services.AddTransient<Call, Call>();
             // Add framework services.
             services.AddMvc();
         }
@@ -53,12 +64,22 @@ namespace AddressBook
 
             app.UseStaticFiles();
 
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            {
+                AuthenticationScheme = "Cookies",
+                LoginPath = new PathString("/Account/Login"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            
         }
     }
 }

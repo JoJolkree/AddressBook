@@ -8,7 +8,7 @@ namespace AddressBookDomain.Domain
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
-        public UserType Type { get; set; }
+        public UserType UserType { get; set; }
         public List<Contact> Contacts { get; set; }
 
         public User()
@@ -16,11 +16,11 @@ namespace AddressBookDomain.Domain
             Contacts = new List<Contact>();
         }
 
-        public User(string login, string password, UserType type)
+        public User(string login, string password, UserType userType)
         {
             Login = login;
             Password = password;
-            Type = type;
+            UserType = userType;
             Contacts = new List<Contact>();
         }
 

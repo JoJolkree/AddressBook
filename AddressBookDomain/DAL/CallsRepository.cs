@@ -23,6 +23,21 @@ namespace AddressBookDomain.DAL
             return new List<Call>();
         }
 
+        public IEnumerable<Call> GetAllUserCalls(User user)
+        {
+            return _addressBookDb.Users
+                .Include(x => x.Contacts)
+                .ThenInclude(x => x.Calls)
+                .First(x => Equals(user, x))
+                .Contacts
+                .SelectMany(x => x.Calls);
+        }
+
+        public Call GetCallByid(int id)
+        {
+            return _addressBookDb.Calls.First(x => x.Id == id);
+        }
+
         public void Remove(User user, Call call)
         {
             var contactForCall = _addressBookDb.Calls.Include(x => x.Contact).First(x => x.Equals(call)).Contact;
