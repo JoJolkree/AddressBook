@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
@@ -61,6 +62,19 @@ namespace AddressBookDomain.DAL
             var user = _addressBookDb.Users.FirstOrDefault(x => string.Equals(x.Login, login,
                                                                     StringComparison.OrdinalIgnoreCase) && x.Password == password);
             return user;
+        }
+
+        public void ChangeType(User user, User destUser, UserType type)
+        {
+            if (user.UserType != UserType.Admin ||
+                _addressBookDb.Users.FirstOrDefault(x => Equals(x, user)) == null) return;
+            _addressBookDb.Users.First(x => Equals(x, destUser)).UserType = type;
+            _addressBookDb.SaveChanges();
+        }
+
+        public IEnumerable<User> GetAllUsers()
+        {
+            return _addressBookDb.Users;
         }
     }
 }

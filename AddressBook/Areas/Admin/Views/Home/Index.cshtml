@@ -1,0 +1,34 @@
+﻿@model System.Collections.Generic.IEnumerable<AddressBookDomain.Domain.User>
+
+@{
+    ViewData["Title"] = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table">
+    <thead class="thead-inverse">
+    <tr>
+        <th>Login</th>
+        <th>Role</th>
+        <th></th>
+    </tr>
+    </thead>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Login</td>
+            <td>@user.UserType</td>
+            @if (user.Login != User.Identity.Name)
+            {
+                <td>
+                    <a href="/Admin/Home/SetRole?login=@user.Login&role=0">Set user</a>&nbsp;
+                    <a href="/Admin/Home/SetRole?login=@user.Login&role=1">Set admin</a>
+                </td>
+            }
+            else
+            {
+                <td />
+            }
+        </tr>
+    }
+</table>
