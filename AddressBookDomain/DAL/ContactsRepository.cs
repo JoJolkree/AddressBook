@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
+using AddressBookDomain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace AddressBookDomain.DAL
@@ -90,7 +91,9 @@ namespace AddressBookDomain.DAL
 
         public Contact GetContactById(int id)
         {
-            return _addressBookDb.Contacts.First(x => x.Id == id);
+            var user = _addressBookDb.Contacts.FirstOrDefault(x => x.Id == id);
+            if (user == null) throw new UserNotFoundException();
+            return user;
         }
     }
 }

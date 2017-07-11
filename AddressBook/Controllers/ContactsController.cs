@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AddressBook.ViewModels;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
+using AddressBookDomain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,15 +55,25 @@ namespace AddressBook.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         [Authorize]
         public IActionResult Edit(int id)
         {
-            var contact = _contactsRepo.GetContactById(id);
+            Contact contact;
+            try
+            {
+                contact = _contactsRepo.GetContactById(id);
+            }
+            catch (UserNotFoundException)
+            {
+                return RedirectToAction("Index");
+            }
             return View(contact);
         }
 
+        [HttpPost]
         [Authorize]
-        public IActionResult SaveChanges(Contact contact) //TODO: ID == 0
+        public IActionResult Edit(Contact contact)
         {
             var user = _usersRepository.GetUserByLogin(User.Identity.Name);
             var contactFromRepo = _contactsRepo.GetContactById(contact.Id);
