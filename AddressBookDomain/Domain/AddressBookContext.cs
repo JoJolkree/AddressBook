@@ -8,7 +8,9 @@ namespace AddressBookDomain.Domain
         {
         }
 
-        public AddressBookContext(DbContextOptions options) : base(options) { }
+        public AddressBookContext(DbContextOptions options) : base(options)
+        {
+        }
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Contact> Contacts { get; set; }
@@ -17,9 +19,8 @@ namespace AddressBookDomain.Domain
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
-            }
+                optionsBuilder.UseSqlServer(
+                    @"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
         }
     }
 }

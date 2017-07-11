@@ -16,7 +16,7 @@ namespace AddressBookDomain.DAL
             _addressBookDb = addressBookDb;
         }
 
-        public void Add(User user, string name ="", string phoneNumber="", string email="", string note="")
+        public void Add(User user, string name = "", string phoneNumber = "", string email = "", string note = "")
         {
             var contact = new Contact(user, name, phoneNumber, email, note);
             Add(user, contact);
@@ -65,10 +65,11 @@ namespace AddressBookDomain.DAL
                 .First(x => Equals(x, user))
                 .Contacts
                 .Where(x => x.Name.ToLowerInvariant()
-                .Contains(query.ToLowerInvariant()));
+                    .Contains(query.ToLowerInvariant()));
         }
 
-        public void Edit(User user, Contact contact, string newName=null, string newPhoneNumber=null, string newEmail=null, string newNote=null)
+        public void Edit(User user, Contact contact, string newName = null, string newPhoneNumber = null,
+            string newEmail = null, string newNote = null)
         {
             if (!user.Contacts.Contains(contact))
                 return;
@@ -87,7 +88,8 @@ namespace AddressBookDomain.DAL
             _addressBookDb.Calls.Add(call);
             contact.Calls.Add(call);
             _addressBookDb.SaveChanges();
-;       }
+            ;
+        }
 
         public Contact GetContactById(int id)
         {

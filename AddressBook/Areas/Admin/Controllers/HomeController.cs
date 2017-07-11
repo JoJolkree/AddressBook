@@ -8,8 +8,8 @@ namespace AddressBook.Areas.Admin.Controllers
     [Area("Admin")]
     public class HomeController : Controller
     {
-        private UsersRepository _userRepo;
-        
+        private readonly UsersRepository _userRepo;
+
         public HomeController(UsersRepository userRepo)
         {
             _userRepo = userRepo;

@@ -1,12 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace AddressBookDomain.Tests
 {
@@ -17,11 +13,13 @@ namespace AddressBookDomain.Tests
         public void TestAddingUsersToDb()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "TestAddingUsersToDb");
+            builder.UseInMemoryDatabase("TestAddingUsersToDb");
             var options = builder.Options;
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -44,7 +42,7 @@ namespace AddressBookDomain.Tests
         public void TestDeleteUser()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "TestDeleteUser");
+            builder.UseInMemoryDatabase("TestDeleteUser");
             var options = builder.Options;
             var idToDelete = 0;
             User user3;

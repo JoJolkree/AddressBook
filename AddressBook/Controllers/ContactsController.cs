@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using AddressBook.ViewModels;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
@@ -14,8 +9,8 @@ namespace AddressBook.Controllers
 {
     public class ContactsController : Controller
     {
-        private ContactsRepository _contactsRepo;
-        private UsersRepository _usersRepository;
+        private readonly ContactsRepository _contactsRepo;
+        private readonly UsersRepository _usersRepository;
 
         public ContactsController(ContactsRepository contactsRepo, UsersRepository usersRepo)
         {
@@ -27,11 +22,19 @@ namespace AddressBook.Controllers
         public IActionResult Index()
         {
             var contacts = _contactsRepo.GetAllContactsForUser(User.Identity.Name);
-            return View(new UserContactsModel() {Contacts = contacts});
+            return View(new UserContactsModel {Contacts = contacts});
         }
 
         [Authorize]
-        public IActionResult Add(UserContactsModel model)
+        [HttpGet]
+        public IActionResult Add()
+        {
+            return View(new Contact());
+        }
+
+        [Authorize]
+        [HttpPost]
+        public IActionResult Add(Contact model)
         {
             var user = _usersRepository.GetUserByLogin(User.Identity.Name);
             _contactsRepo.Add(user, model.Name, model.PhoneNumber, model.Email, model.Note);
@@ -79,6 +82,19 @@ namespace AddressBook.Controllers
             var contactFromRepo = _contactsRepo.GetContactById(contact.Id);
             _contactsRepo.Edit(user, contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Search(UserContactsModel model)
+        {
+            if (string.IsNullOrEmpty(model.SearchText))
+                return RedirectToAction("Index");
+            return View("Index", new UserContactsModel
+            {
+                SearchText = model.SearchText,
+                Contacts = _contactsRepo.SearchByName(_usersRepository.GetUserByLogin(User.Identity.Name),
+                    model.SearchText)
+            });
         }
     }
 }

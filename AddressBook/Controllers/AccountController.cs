@@ -1,22 +1,17 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AddressBook.ViewModels;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
-using Microsoft.AspNetCore.Http.Features.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 
 namespace AddressBook.Controllers
 {
     public class AccountController : Controller
     {
-        private UsersRepository userRepo;
+        private readonly UsersRepository userRepo;
 
         public AccountController(UsersRepository repo)
         {

@@ -5,12 +5,6 @@ namespace AddressBookDomain.Domain
 {
     public class User
     {
-        public int Id { get; set; }
-        public string Login { get; set; }
-        public string Password { get; set; }
-        public UserType UserType { get; set; }
-        public List<Contact> Contacts { get; set; }
-
         public User()
         {
             Contacts = new List<Contact>();
@@ -23,6 +17,12 @@ namespace AddressBookDomain.Domain
             UserType = userType;
             Contacts = new List<Contact>();
         }
+
+        public int Id { get; set; }
+        public string Login { get; set; }
+        public string Password { get; set; }
+        public UserType UserType { get; set; }
+        public List<Contact> Contacts { get; set; }
 
         public override string ToString()
         {
@@ -38,13 +38,13 @@ namespace AddressBookDomain.Domain
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((User) obj);
         }
 
         public override int GetHashCode()
         {
-            return (Login != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(Login) : 0);
+            return Login != null ? StringComparer.OrdinalIgnoreCase.GetHashCode(Login) : 0;
         }
     }
 

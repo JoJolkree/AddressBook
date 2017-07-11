@@ -3,15 +3,30 @@
     ViewData["Title"] = "Contacts";
 }
 
+<br/>
+
+<form asp-action="Search" asp-controller="Contacts" asp-antiforgery="true">
+    <div class="validation" asp-validation-summary="ModelOnly"></div>
+    <div class="input-group">
+        <input type="text" class="form-control" asp-for="SearchText" placeholder="Search"/>
+        <div class="input-group-btn">
+            <button type="submit" class="btn btn-default" value="Search">
+                <i class="glyphicon glyphicon-search"></i>
+            </button>
+        </div>
+    </div>
+</form>
+
+
 <table class="table">
     <thead class="thead-inverse">
-        <tr>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Note</th>
-            <th>Actions</th>
-        </tr>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Note</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     @foreach (var contact in Model.Contacts)
     {
@@ -20,34 +35,12 @@
             <td>@contact.PhoneNumber</td>
             <td>@contact.Email</td>
             <td>@contact.Note</td>
-            <td><a href="/Contacts/Call/@contact.Id">Call</a> @Html.ActionLink("Edit", "Edit", new {id = contact.Id}, new {@class = "compItem" }) <a href="/Contacts/Remove/@contact.Id">Remove</a></td>
+            <td>
+                <a href="/Contacts/Call/@contact.Id">Call</a> @Html.ActionLink("Edit", "Edit", new {id = contact.Id}, new {@class = "compItem"}) <a href="/Contacts/Remove/@contact.Id">Remove</a>
+            </td>
         </tr>
     }
 </table>
 
-<br /><br />
 
-<form asp-action="Add" asp-controller="Contacts" asp-antiforgery="true">
-    <div class="validation" asp-validation-summary="ModelOnly"></div>
-    <div class="row">
-        <div class="col-lg-2">
-            <input type="text" class="form-control" asp-for="Name" placeholder="Name"/>
-            <span asp-validation-for="Name"></span>
-        </div>
-        <div class="col-lg-2">
-            <input type="text" class="form-control" asp-for="PhoneNumber" placeholder="Phone"/>
-            <span asp-validation-for="PhoneNumber"></span>
-        </div>
-        <div class="col-lg-2">
-            <input type="text" class="form-control" asp-for="Email" placeholder="Email"/>
-            <span asp-validation-for="Email"></span>
-        </div>
-        <div class="col-lg-2">
-            <input type="text" class="form-control" asp-for="Note" placeholder="Note"/>
-            <span asp-validation-for="Note"></span>
-        </div>
-        <div class="col-lg-2">
-            <input type="submit" value="Add" class="btn"/>
-        </div>
-    </div>
-</form>
+<a class="btn btn-default" href="/Contacts/Add">Add new contact</a>

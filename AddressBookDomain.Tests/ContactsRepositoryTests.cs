@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
+﻿using System.Linq;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AddressBookDomain.Tests
@@ -15,13 +13,15 @@ namespace AddressBookDomain.Tests
         public void AddContactTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "AddContactTest");
+            builder.UseInMemoryDatabase("AddContactTest");
             var options = builder.Options;
 
             var user = new User("test", "test", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -35,7 +35,8 @@ namespace AddressBookDomain.Tests
             using (var context = new AddressBookContext(options))
             {
                 Assert.AreEqual(1, context.Contacts.Count());
-                Assert.AreEqual(1, context.Users.Include(x => x.Contacts).FirstOrDefault(x => Equals(x, user)).Contacts.Count);
+                Assert.AreEqual(1,
+                    context.Users.Include(x => x.Contacts).FirstOrDefault(x => Equals(x, user)).Contacts.Count);
                 Assert.AreEqual(user, context.Contacts.Include(x => x.User).First().User);
             }
         }
@@ -44,14 +45,16 @@ namespace AddressBookDomain.Tests
         public void AddContactAndSearchByNameTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "AddContactAndSearchByNameTest");
+            builder.UseInMemoryDatabase("AddContactAndSearchByNameTest");
             var options = builder.Options;
 
             var user1 = new User("test1", "", UserType.User);
             var user2 = new User("test2", "", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -87,12 +90,14 @@ namespace AddressBookDomain.Tests
         public void RemoveContactTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "RemoveContactTest");
+            builder.UseInMemoryDatabase("RemoveContactTest");
             var options = builder.Options;
             var user = new User("test", "test", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -129,13 +134,15 @@ namespace AddressBookDomain.Tests
         public void DeleteContactFromUsersTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "DeleteContactFromUsersTest");
+            builder.UseInMemoryDatabase("DeleteContactFromUsersTest");
             var options = builder.Options;
             var user1 = new User("test", "test", UserType.User);
             var user2 = new User("test2", "", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -170,8 +177,10 @@ namespace AddressBookDomain.Tests
             using (var context = new AddressBookContext(options))
             {
                 Assert.AreEqual(2, context.Contacts.Count());
-                Assert.IsTrue(context.Contacts.ToList()[0].Name == "Vasya" || context.Contacts.ToList()[1].Name == "Vasya");
-                Assert.IsTrue(context.Contacts.ToList()[0].Name == "Vanya" || context.Contacts.ToList()[1].Name == "Vanya");
+                Assert.IsTrue(context.Contacts.ToList()[0].Name == "Vasya" ||
+                              context.Contacts.ToList()[1].Name == "Vasya");
+                Assert.IsTrue(context.Contacts.ToList()[0].Name == "Vanya" ||
+                              context.Contacts.ToList()[1].Name == "Vanya");
             }
         }
 
@@ -179,13 +188,15 @@ namespace AddressBookDomain.Tests
         public void SearchByNameTests()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "SearchByNameTests");
+            builder.UseInMemoryDatabase("SearchByNameTests");
             var options = builder.Options;
             var user = new User("test", "test", UserType.User);
             var emptyUser = new User("empty", "", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -214,12 +225,14 @@ namespace AddressBookDomain.Tests
         public void EditContactTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "EditContactTest");
+            builder.UseInMemoryDatabase("EditContactTest");
             var options = builder.Options;
             var user = new User("test", "test", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {
@@ -247,12 +260,14 @@ namespace AddressBookDomain.Tests
         public void CallContactTest()
         {
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
-            builder.UseInMemoryDatabase(databaseName: "CallContactTest");
+            builder.UseInMemoryDatabase("CallContactTest");
             var options = builder.Options;
             var user = new User("test", "test", UserType.User);
 
             using (var context = new AddressBookContext(options))
+            {
                 context.Database.EnsureCreated();
+            }
 
             using (var context = new AddressBookContext(options))
             {

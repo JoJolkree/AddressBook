@@ -11,14 +11,15 @@
         <th></th>
     </tr>
     </thead>
-    
+
     @foreach (var call in Model)
     {
         <tr>
             <td>@call.Contact</td>
             <td>@call.Created</td>
-            <td><a href="/Calls/Remove/@call.Id">Remove</a></td>
+            <td>
+                <a href="/Calls/Remove/@call.Id">Remove</a>
+            </td>
         </tr>
     }
 </table>
-

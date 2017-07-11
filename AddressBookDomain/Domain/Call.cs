@@ -4,17 +4,19 @@ namespace AddressBookDomain.Domain
 {
     public class Call
     {
-        public int Id { get; set; }
-        public DateTime Created { get; set; }
-        public Contact Contact { get; set; }
-
-        public Call() { }
+        public Call()
+        {
+        }
 
         public Call(Contact contact)
         {
             Contact = contact;
             Created = DateTime.Now;
         }
+
+        public int Id { get; set; }
+        public DateTime Created { get; set; }
+        public Contact Contact { get; set; }
 
         protected bool Equals(Call other)
         {
@@ -25,7 +27,7 @@ namespace AddressBookDomain.Domain
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Call) obj);
         }
 

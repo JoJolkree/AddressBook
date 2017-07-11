@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AddressBookDomain.DAL;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +7,8 @@ namespace AddressBook.Controllers
 {
     public class CallsController : Controller
     {
-        private CallsRepository _callsRepo;
-        private UsersRepository _userRepo;
+        private readonly CallsRepository _callsRepo;
+        private readonly UsersRepository _userRepo;
 
         public CallsController(CallsRepository callsRepo, UsersRepository userRepo)
         {

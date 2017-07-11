@@ -1,10 +1,10 @@
-@model AddressBookDomain.Domain.Contact
+﻿@model AddressBookDomain.Domain.Contact
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Add new contact";
 }
 
-<h2>Editing contact "@Model.Name"</h2>
-<form asp-action="Edit" asp-controller="Contacts" asp-antiforgery="true">
+<h2>Add new contact</h2>
+<form asp-action="Add" asp-controller="Contacts" asp-antiforgery="true">
     <div class="validation" asp-validation-summary="ModelOnly"></div>
     <div class="row">
         <div class="col-lg-2">
