@@ -8,7 +8,7 @@
 <form asp-action="Search" asp-controller="Contacts" asp-antiforgery="true">
     <div class="validation" asp-validation-summary="ModelOnly"></div>
     <div class="input-group">
-        <input type="text" class="form-control" asp-for="SearchText" placeholder="Search"/>
+        <input type="text" class="form-control" style="max-width: none" asp-for="SearchText" placeholder="Search"/>
         <div class="input-group-btn">
             <button type="submit" class="btn btn-default" value="Search">
                 <i class="glyphicon glyphicon-search"></i>
