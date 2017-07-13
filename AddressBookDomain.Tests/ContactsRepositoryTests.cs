@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -16,7 +17,7 @@ namespace AddressBookDomain.Tests
             builder.UseInMemoryDatabase("AddContactTest");
             var options = builder.Options;
 
-            var user = new User("test", "test", UserType.User);
+            var user = new User("test", "test", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -25,10 +26,10 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user, "Petya");
             }
 
@@ -48,8 +49,8 @@ namespace AddressBookDomain.Tests
             builder.UseInMemoryDatabase("AddContactAndSearchByNameTest");
             var options = builder.Options;
 
-            var user1 = new User("test1", "", UserType.User);
-            var user2 = new User("test2", "", UserType.User);
+            var user1 = new User("test1", "", UserType.User, "");
+            var user2 = new User("test2", "", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -58,18 +59,18 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user1);
                 userRepo.Add(user2);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user1, "Vasechkin", "+79123456789");
                 contactRepo.Add(user2, "Petechkin", "+1233455");
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 var vasechkin = contactRepo.SearchByName(user1, "").ToList();
                 var petechkin = contactRepo.SearchByName(user2, "Petechkin").ToList();
                 var empty1 = contactRepo.SearchByName(user2, "Vasechkin").ToList();
@@ -92,7 +93,7 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("RemoveContactTest");
             var options = builder.Options;
-            var user = new User("test", "test", UserType.User);
+            var user = new User("test", "test", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -101,10 +102,10 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
 
-                var contactsRepo = new ContactsRepository(context);
+                var contactsRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactsRepo.Add(user, "Vasechkin");
             }
 
@@ -116,10 +117,10 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 var userFromRepo = userRepo.GetUserByLogin("test");
 
-                var contactsRepo = new ContactsRepository(context);
+                var contactsRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactsRepo.Remove(userFromRepo, context.Contacts.First(x => x.Name == "Vasechkin"));
             }
 
@@ -136,8 +137,8 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("DeleteContactFromUsersTest");
             var options = builder.Options;
-            var user1 = new User("test", "test", UserType.User);
-            var user2 = new User("test2", "", UserType.User);
+            var user1 = new User("test", "test", UserType.User, "");
+            var user2 = new User("test2", "", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -146,11 +147,11 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user1);
                 userRepo.Add(user2);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user1, "Petya");
                 contactRepo.Add(user1, "Vasya");
                 contactRepo.Add(user2, "Vanya");
@@ -167,7 +168,7 @@ namespace AddressBookDomain.Tests
                 var vanyaFromRepo = context.Contacts.First(x => x.Name == "Vanya");
                 var kolyaFromRepo = context.Contacts.First(x => x.Name == "Kolya");
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Remove(user1FromRepo, petyaFromRepo);
                 contactRepo.Remove(user2FromRepo, vasyaFromRepo);
                 contactRepo.Remove(user1FromRepo, vanyaFromRepo);
@@ -190,8 +191,8 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("SearchByNameTests");
             var options = builder.Options;
-            var user = new User("test", "test", UserType.User);
-            var emptyUser = new User("empty", "", UserType.User);
+            var user = new User("test", "test", UserType.User, "");
+            var emptyUser = new User("empty", "", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -200,17 +201,17 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
                 userRepo.Add(emptyUser);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user, "AbraCadAbra");
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 Assert.AreEqual(1, contactRepo.SearchByName(user, "abra").Count());
                 Assert.AreEqual(1, contactRepo.SearchByName(user, "abracadabra").Count());
                 Assert.AreEqual(0, contactRepo.SearchByName(user, "abracadabrad").Count());
@@ -227,7 +228,7 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("EditContactTest");
             var options = builder.Options;
-            var user = new User("test", "test", UserType.User);
+            var user = new User("test", "test", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -236,16 +237,16 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user, "Vasya");
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Edit(user, contactRepo.SearchByName(user, "Vasya").First(), newPhoneNumber: "+79123456789");
             }
 
@@ -262,7 +263,7 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("CallContactTest");
             var options = builder.Options;
-            var user = new User("test", "test", UserType.User);
+            var user = new User("test", "test", UserType.User, "");
 
             using (var context = new AddressBookContext(options))
             {
@@ -271,16 +272,16 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
 
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Add(user, "Vasya");
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var contactRepo = new ContactsRepository(context);
+                var contactRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactRepo.Call(user, contactRepo.SearchByName(user, "Vasya").First());
             }
 

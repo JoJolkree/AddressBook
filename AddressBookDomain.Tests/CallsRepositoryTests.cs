@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,8 +16,8 @@ namespace AddressBookDomain.Tests
             var builder = new DbContextOptionsBuilder<AddressBookContext>();
             builder.UseInMemoryDatabase("GetCallsToContactAndRemoveTest");
             var options = builder.Options;
-            var user = new User("test", "", UserType.User);
-            var user2 = new User("test2", "", UserType.User);
+            var user = new User("test", "", UserType.User, "");
+            var user2 = new User("test2", "", UserType.User, "");
             var contact = new Contact(user, "Vasya");
 
             using (var context = new AddressBookContext(options))
@@ -26,18 +27,18 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Add(user);
                 userRepo.Add(user2);
 
-                var contactsRepo = new ContactsRepository(context);
+                var contactsRepo = new ContactsRepository(context, new HttpContextAccessor());
                 contactsRepo.Add(user, contact);
                 contactsRepo.Call(user, contact);
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var callsRepo = new CallsRepository(context);
+                var callsRepo = new CallsRepository(context, new HttpContextAccessor());
                 var calls = callsRepo.GetCallsToContact(user, contact);
                 var calls2 = callsRepo.GetCallsToContact(user2, contact);
 
@@ -47,7 +48,7 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var callsRepo = new CallsRepository(context);
+                var callsRepo = new CallsRepository(context, new HttpContextAccessor());
                 var call = context.Calls.First();
                 callsRepo.Remove(user2, call);
 

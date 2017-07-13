@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AddressBookDomain.DAL
 {
-    public class ContactsRepository
+    public class ContactsRepository : BaseRepository
     {
         private readonly AddressBookContext _addressBookDb;
 
-        public ContactsRepository(AddressBookContext addressBookDb)
+        public ContactsRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb, accessor)
         {
             _addressBookDb = addressBookDb;
         }
@@ -20,6 +21,11 @@ namespace AddressBookDomain.DAL
         {
             var contact = new Contact(user, name, phoneNumber, email, note);
             Add(user, contact);
+        }
+
+        public void Add(string name = "", string phoneNumber = "", string email = "", string note = "")
+        {
+            Add(GetCurrentUser(), name, phoneNumber, email, note);
         }
 
         public void Add(User user, Contact contact)
@@ -39,6 +45,16 @@ namespace AddressBookDomain.DAL
                 return;
             _addressBookDb.Contacts.Remove(contactFromDb);
             _addressBookDb.SaveChanges();
+        }
+
+        public void Remove(Contact contact)
+        {
+            Remove(GetCurrentUser(), contact);
+        }
+
+        public IEnumerable<Contact> GetAllContactsForUser()
+        {
+            return GetAllContactsForUser(GetCurrentUser());
         }
 
         public IEnumerable<Contact> GetAllContactsForUser(string login)
@@ -70,6 +86,11 @@ namespace AddressBookDomain.DAL
                     .Contains(query.ToLowerInvariant()));
         }
 
+        public IEnumerable<Contact> SearchByName(string query)
+        {
+            return SearchByName(GetCurrentUser(), query);
+        }
+
         public void Edit(User user, Contact contact, string newName = null, string newPhoneNumber = null,
             string newEmail = null, string newNote = null)
         {
@@ -84,13 +105,23 @@ namespace AddressBookDomain.DAL
             _addressBookDb.SaveChanges();
         }
 
+        public void Edit(Contact contact, string newName = null, string newPhoneNumber = null,
+            string newEmail = null, string newNote = null)
+        {
+            Edit(GetCurrentUser(), contact, newName, newPhoneNumber, newEmail, newNote);
+        }
+
         public void Call(User user, Contact contact)
         {
             var call = new Call(contact);
             _addressBookDb.Calls.Add(call);
             contact.Calls.Add(call);
             _addressBookDb.SaveChanges();
-            ;
+        }
+
+        public void Call(Contact contact)
+        {
+            Call(GetCurrentUser(), contact);
         }
 
         public Contact GetContactById(int id)

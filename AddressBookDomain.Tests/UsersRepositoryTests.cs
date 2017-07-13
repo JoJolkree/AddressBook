@@ -1,6 +1,7 @@
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -23,18 +24,18 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
-                userRepo.Add("test", "test", UserType.User);
-                userRepo.Add(new User("test2", "test2", UserType.Admin));
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
+                userRepo.Add("test", "test", UserType.User, "");
+                userRepo.Add(new User("test2", "test2", UserType.Admin, ""));
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 var user1 = userRepo.GetUserByLogin("test");
                 var user2 = userRepo.GetUserByLogin("test2");
-                Assert.AreEqual(user1, new User("test", "test", UserType.User));
-                Assert.AreEqual(user2, new User("test2", "", UserType.Admin));
+                Assert.AreEqual(user1, new User("test", "test", UserType.User, ""));
+                Assert.AreEqual(user2, new User("test2", "", UserType.Admin, ""));
             }
         }
 
@@ -54,25 +55,25 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
-                userRepo.Add("test", "test", UserType.Admin);
-                userRepo.Add("test2", "test", UserType.User);
-                user3 = new User("test3", "Test", UserType.User);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
+                userRepo.Add("test", "test", UserType.Admin, "");
+                userRepo.Add("test2", "test", UserType.User, "");
+                user3 = new User("test3", "Test", UserType.User, "");
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
-                Assert.AreEqual(userRepo.GetUserByLogin("test"), new User("test", "", UserType.Admin));
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
+                Assert.AreEqual(userRepo.GetUserByLogin("test"), new User("test", "", UserType.Admin, ""));
                 var user2 = userRepo.GetUserByLogin("test2");
                 idToDelete = user2.Id;
-                Assert.AreEqual(user2, new User("test2", "", UserType.Admin));
-                Assert.AreEqual(user3, new User("Test3", "", UserType.User));
+                Assert.AreEqual(user2, new User("test2", "", UserType.Admin, ""));
+                Assert.AreEqual(user3, new User("Test3", "", UserType.User, ""));
             }
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 userRepo.Delete("test");
                 userRepo.Delete(idToDelete);
                 userRepo.Delete(user3);
@@ -80,7 +81,7 @@ namespace AddressBookDomain.Tests
 
             using (var context = new AddressBookContext(options))
             {
-                var userRepo = new UsersRepository(context);
+                var userRepo = new UsersRepository(context, new HttpContextAccessor());
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test"));
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test2"));
                 Assert.ThrowsException<UserNotFoundException>(() => userRepo.GetUserByLogin("test3"));

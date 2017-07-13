@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace AddressBookDomain.DAL
 {
-    public class CallsRepository
+    public class CallsRepository : BaseRepository
     {
         private readonly AddressBookContext _addressBookDb;
 
-        public CallsRepository(AddressBookContext addressBookContext)
+        public CallsRepository(AddressBookContext addressBookContext, IHttpContextAccessor accessor) : base(addressBookContext, accessor)
         {
             _addressBookDb = addressBookContext;
         }
@@ -23,6 +24,11 @@ namespace AddressBookDomain.DAL
             return new List<Call>();
         }
 
+        public IEnumerable<Call> GetCallsToContact(Contact contact)
+        {
+            return GetCallsToContact(GetCurrentUser(), contact);
+        }
+
         public IEnumerable<Call> GetAllUserCalls(User user)
         {
             return _addressBookDb.Users
@@ -31,6 +37,11 @@ namespace AddressBookDomain.DAL
                 .First(x => Equals(user, x))
                 .Contacts
                 .SelectMany(x => x.Calls);
+        }
+
+        public IEnumerable<Call> GetAllUserCalls()
+        {
+            return GetAllUserCalls(GetCurrentUser());
         }
 
         public Call GetCallByid(int id)
@@ -48,6 +59,11 @@ namespace AddressBookDomain.DAL
                 return;
             _addressBookDb.Calls.Remove(call);
             _addressBookDb.SaveChanges();
+        }
+
+        public void Remove(Call call)
+        {
+            Remove(GetCurrentUser(), call);
         }
     }
 }

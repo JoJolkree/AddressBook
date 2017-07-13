@@ -21,7 +21,7 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            var contacts = _contactsRepo.GetAllContactsForUser(User.Identity.Name);
+            var contacts = _contactsRepo.GetAllContactsForUser();
             return View(new UserContactsModel {Contacts = contacts});
         }
 
@@ -36,8 +36,7 @@ namespace AddressBook.Controllers
         [HttpPost]
         public IActionResult Add(Contact model)
         {
-            var user = _usersRepository.GetUserByLogin(User.Identity.Name);
-            _contactsRepo.Add(user, model.Name, model.PhoneNumber, model.Email, model.Note);
+            _contactsRepo.Add(model.Name, model.PhoneNumber, model.Email, model.Note);
 
             return RedirectToAction("Index");
         }
@@ -45,16 +44,14 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Remove(int id)
         {
-            var user = _usersRepository.GetUserByLogin(User.Identity.Name);
-            _contactsRepo.Remove(user, _contactsRepo.GetContactById(id));
+            _contactsRepo.Remove(_contactsRepo.GetContactById(id));
             return RedirectToAction("Index");
         }
 
         [Authorize]
         public IActionResult Call(int id)
         {
-            var user = _usersRepository.GetUserByLogin(User.Identity.Name);
-            _contactsRepo.Call(user, _contactsRepo.GetContactById(id));
+            _contactsRepo.Call(_contactsRepo.GetContactById(id));
             return RedirectToAction("Index");
         }
 
@@ -78,9 +75,8 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Edit(Contact contact)
         {
-            var user = _usersRepository.GetUserByLogin(User.Identity.Name);
             var contactFromRepo = _contactsRepo.GetContactById(contact.Id);
-            _contactsRepo.Edit(user, contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
+            _contactsRepo.Edit(contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
             return RedirectToAction("Index");
         }
 

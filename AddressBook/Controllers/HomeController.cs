@@ -31,5 +31,10 @@ namespace AddressBook.Controllers
         {
             return View();
         }
+
+        public IActionResult ErrorStatus(string id)
+        {
+            return View("ErrorStatus", id);
+        }
     }
 }

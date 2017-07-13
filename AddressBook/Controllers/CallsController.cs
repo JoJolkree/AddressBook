@@ -19,15 +19,13 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            var user = _userRepo.GetUserByLogin(User.Identity.Name);
-            return View(_callsRepo.GetAllUserCalls(user).OrderBy(x => x.Created));
+            return View(_callsRepo.GetAllUserCalls().OrderBy(x => x.Created));
         }
 
         [Authorize]
         public IActionResult Remove(int id)
         {
-            var user = _userRepo.GetUserByLogin(User.Identity.Name);
-            _callsRepo.Remove(user, _callsRepo.GetCallByid(id));
+            _callsRepo.Remove(_callsRepo.GetCallByid(id));
             return RedirectToAction("Index");
         }
     }

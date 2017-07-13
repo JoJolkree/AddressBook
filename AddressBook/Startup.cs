@@ -37,6 +37,8 @@ namespace AddressBook
             services.AddTransient<User, User>();
             services.AddTransient<Contact, Contact>();
             services.AddTransient<Call, Call>();
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Add framework services.
             services.AddMvc();
         }
@@ -58,6 +60,8 @@ namespace AddressBook
             }
 
             app.UseStaticFiles();
+
+            app.UseStatusCodePagesWithReExecute("/Home/ErrorStatus/{0}");
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {

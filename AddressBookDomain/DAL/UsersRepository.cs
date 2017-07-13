@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using AddressBookDomain.Domain;
 using AddressBookDomain.Exceptions;
+using Microsoft.AspNetCore.Http;
 
 namespace AddressBookDomain.DAL
 {
-    public class UsersRepository
+    public class UsersRepository : BaseRepository
     {
         private readonly AddressBookContext _addressBookDb;
 
-        public UsersRepository(AddressBookContext addressBookDb)
+        public UsersRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb, accessor)
         {
             _addressBookDb = addressBookDb;
         }
@@ -72,6 +73,11 @@ namespace AddressBookDomain.DAL
                 _addressBookDb.Users.FirstOrDefault(x => Equals(x, user)) == null) return;
             _addressBookDb.Users.First(x => Equals(x, destUser)).UserType = type;
             _addressBookDb.SaveChanges();
+        }
+
+        public void ChangeType(User destUser, UserType type)
+        {
+            ChangeType(GetCurrentUser(), destUser, type);
         }
 
         public IEnumerable<User> GetAllUsers()
