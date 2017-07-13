@@ -32,8 +32,10 @@ namespace AddressBookDomain.DAL
 
         public void Remove(User user, Contact contact)
         {
-            var contactFromDb = _addressBookDb.Contacts.FirstOrDefault(x => Equals(contact, x));
-            if (contactFromDb == null || !contactFromDb.User.Equals(user))
+            var contactFromDb = _addressBookDb.Contacts.Include(x => x.Calls).FirstOrDefault(x => Equals(contact, x));
+            foreach (var call in contactFromDb.Calls)
+                _addressBookDb.Calls.Remove(call);
+            if (!contactFromDb.User.Equals(user))
                 return;
             _addressBookDb.Contacts.Remove(contactFromDb);
             _addressBookDb.SaveChanges();

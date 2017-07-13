@@ -10,17 +10,19 @@ namespace AddressBookDomain.Domain
             Contacts = new List<Contact>();
         }
 
-        public User(string login, string password, UserType userType)
+        public User(string login, string password, UserType userType, string salt)
         {
             Login = login;
             Password = password;
             UserType = userType;
             Contacts = new List<Contact>();
+            Salt = salt;
         }
 
         public int Id { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
+        public string Salt { get; set; }
         public UserType UserType { get; set; }
         public List<Contact> Contacts { get; set; }
 

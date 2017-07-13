@@ -23,9 +23,9 @@ namespace AddressBookDomain.DAL
             _addressBookDb.SaveChanges();
         }
 
-        public void Add(string login, string password, UserType type)
+        public void Add(string login, string password, UserType type, string salt)
         {
-            var user = new User(login, password, type);
+            var user = new User(login, password, type, salt);
             Add(user);
         }
 
