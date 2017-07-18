@@ -5,27 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AddressBook.Controllers
 {
-    public class CallsController : Controller
+    public class CallsController : BaseController<CallsRepository>
     {
-        private readonly CallsRepository _callsRepo;
-        private readonly UsersRepository _userRepo;
-
-        public CallsController(CallsRepository callsRepo, UsersRepository userRepo)
+        public CallsController(CallsRepository callsRepo) : base(callsRepo)
         {
-            _callsRepo = callsRepo;
-            _userRepo = userRepo;
         }
 
         [Authorize]
         public IActionResult Index()
         {
-            return View(_callsRepo.GetAllUserCalls().OrderBy(x => x.Created));
+            return View(Repository.GetAllUserCalls().OrderBy(x => x.Created));
         }
 
         [Authorize]
         public IActionResult Remove(int id)
         {
-            _callsRepo.Remove(_callsRepo.GetCallByid(id));
+            Repository.Remove(Repository.GetCallByid(id));
             return RedirectToAction("Index");
         }
     }

@@ -7,21 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AddressBook.Controllers
 {
-    public class ContactsController : Controller
+    public class ContactsController : BaseController<ContactsRepository>
     {
-        private readonly ContactsRepository _contactsRepo;
-        private readonly UsersRepository _usersRepository;
-
-        public ContactsController(ContactsRepository contactsRepo, UsersRepository usersRepo)
+        public ContactsController(ContactsRepository contactsRepo) : base(contactsRepo)
         {
-            _contactsRepo = contactsRepo;
-            _usersRepository = usersRepo;
         }
 
         [Authorize]
         public IActionResult Index()
         {
-            var contacts = _contactsRepo.GetAllContactsForUser();
+            var contacts = Repository.GetAllContactsForUser();
             return View(new UserContactsModel {Contacts = contacts});
         }
 
@@ -36,7 +31,7 @@ namespace AddressBook.Controllers
         [HttpPost]
         public IActionResult Add(Contact model)
         {
-            _contactsRepo.Add(model.Name, model.PhoneNumber, model.Email, model.Note);
+            Repository.Add(model.Name, model.PhoneNumber, model.Email, model.Note);
 
             return RedirectToAction("Index");
         }
@@ -44,14 +39,14 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Remove(int id)
         {
-            _contactsRepo.Remove(_contactsRepo.GetContactById(id));
+            Repository.Remove(Repository.GetContactById(id));
             return RedirectToAction("Index");
         }
 
         [Authorize]
         public IActionResult Call(int id)
         {
-            _contactsRepo.Call(_contactsRepo.GetContactById(id));
+            Repository.Call(Repository.GetContactById(id));
             return RedirectToAction("Index");
         }
 
@@ -62,7 +57,7 @@ namespace AddressBook.Controllers
             Contact contact;
             try
             {
-                contact = _contactsRepo.GetContactById(id);
+                contact = Repository.GetContactById(id);
             }
             catch (UserNotFoundException)
             {
@@ -75,8 +70,8 @@ namespace AddressBook.Controllers
         [Authorize]
         public IActionResult Edit(Contact contact)
         {
-            var contactFromRepo = _contactsRepo.GetContactById(contact.Id);
-            _contactsRepo.Edit(contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
+            var contactFromRepo = Repository.GetContactById(contact.Id);
+            Repository.Edit(contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
             return RedirectToAction("Index");
         }
 
@@ -88,8 +83,7 @@ namespace AddressBook.Controllers
             return View("Index", new UserContactsModel
             {
                 SearchText = model.SearchText,
-                Contacts = _contactsRepo.SearchByName(_usersRepository.GetUserByLogin(User.Identity.Name),
-                    model.SearchText)
+                Contacts = Repository.SearchByName(model.SearchText)
             });
         }
     }

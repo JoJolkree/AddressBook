@@ -9,19 +9,18 @@ namespace AddressBookDomain.DAL
 {
     public class UsersRepository : BaseRepository
     {
-        private readonly AddressBookContext _addressBookDb;
 
-        public UsersRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb, accessor)
+        public UsersRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb,
+            accessor)
         {
-            _addressBookDb = addressBookDb;
         }
 
         public void Add(User user)
         {
-            if (_addressBookDb.Users.Contains(user))
+            if (AddressBookDb.Users.Contains(user))
                 throw new UserAlreadyExistsException();
-            _addressBookDb.Users.Add(user);
-            _addressBookDb.SaveChanges();
+            AddressBookDb.Users.Add(user);
+            AddressBookDb.SaveChanges();
         }
 
         public void Add(string login, string password, UserType type, string salt)
@@ -32,27 +31,27 @@ namespace AddressBookDomain.DAL
 
         public void Delete(int id)
         {
-            var user = _addressBookDb.Users.FirstOrDefault(x => x.Id == id);
+            var user = AddressBookDb.Users.FirstOrDefault(x => x.Id == id);
             if (user != null)
                 Delete(user);
         }
 
         public void Delete(string login)
         {
-            var user = _addressBookDb.Users.FirstOrDefault(x => x.Login == login);
+            var user = AddressBookDb.Users.FirstOrDefault(x => x.Login == login);
             if (user != null)
                 Delete(user);
         }
 
         public void Delete(User user)
         {
-            _addressBookDb.Users.Remove(user);
-            _addressBookDb.SaveChangesAsync();
+            AddressBookDb.Users.Remove(user);
+            AddressBookDb.SaveChangesAsync();
         }
 
         public User GetUserByLogin(string login)
         {
-            var user = _addressBookDb.Users.FirstOrDefault(
+            var user = AddressBookDb.Users.FirstOrDefault(
                 x => string.Equals(x.Login, login, StringComparison.OrdinalIgnoreCase));
             if (user == null)
                 throw new UserNotFoundException();
@@ -61,7 +60,7 @@ namespace AddressBookDomain.DAL
 
         public User GetUserByLoginAndPassword(string login, string password)
         {
-            var user = _addressBookDb.Users.FirstOrDefault(x => string.Equals(x.Login, login,
+            var user = AddressBookDb.Users.FirstOrDefault(x => string.Equals(x.Login, login,
                                                                     StringComparison.OrdinalIgnoreCase) && x.Password ==
                                                                 password);
             return user;
@@ -70,9 +69,9 @@ namespace AddressBookDomain.DAL
         public void ChangeType(User user, User destUser, UserType type)
         {
             if (user.UserType != UserType.Admin ||
-                _addressBookDb.Users.FirstOrDefault(x => Equals(x, user)) == null) return;
-            _addressBookDb.Users.First(x => Equals(x, destUser)).UserType = type;
-            _addressBookDb.SaveChanges();
+                AddressBookDb.Users.FirstOrDefault(x => Equals(x, user)) == null) return;
+            AddressBookDb.Users.First(x => Equals(x, destUser)).UserType = type;
+            AddressBookDb.SaveChanges();
         }
 
         public void ChangeType(User destUser, UserType type)
@@ -82,7 +81,7 @@ namespace AddressBookDomain.DAL
 
         public IEnumerable<User> GetAllUsers()
         {
-            return _addressBookDb.Users;
+            return AddressBookDb.Users;
         }
     }
 }

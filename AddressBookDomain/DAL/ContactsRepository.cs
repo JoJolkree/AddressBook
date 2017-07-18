@@ -10,11 +10,10 @@ namespace AddressBookDomain.DAL
 {
     public class ContactsRepository : BaseRepository
     {
-        private readonly AddressBookContext _addressBookDb;
 
-        public ContactsRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb, accessor)
+        public ContactsRepository(AddressBookContext addressBookDb, IHttpContextAccessor accessor) : base(addressBookDb,
+            accessor)
         {
-            _addressBookDb = addressBookDb;
         }
 
         public void Add(User user, string name = "", string phoneNumber = "", string email = "", string note = "")
@@ -30,21 +29,21 @@ namespace AddressBookDomain.DAL
 
         public void Add(User user, Contact contact)
         {
-            var userFromRepo = _addressBookDb.Users.First(x => Equals(x, user));
+            var userFromRepo = AddressBookDb.Users.First(x => Equals(x, user));
             userFromRepo.Contacts.Add(contact);
             contact.User = userFromRepo;
-            _addressBookDb.SaveChanges();
+            AddressBookDb.SaveChanges();
         }
 
         public void Remove(User user, Contact contact)
         {
-            var contactFromDb = _addressBookDb.Contacts.Include(x => x.Calls).FirstOrDefault(x => Equals(contact, x));
+            var contactFromDb = AddressBookDb.Contacts.Include(x => x.Calls).FirstOrDefault(x => Equals(contact, x));
             foreach (var call in contactFromDb.Calls)
-                _addressBookDb.Calls.Remove(call);
+                AddressBookDb.Calls.Remove(call);
             if (!contactFromDb.User.Equals(user))
                 return;
-            _addressBookDb.Contacts.Remove(contactFromDb);
-            _addressBookDb.SaveChanges();
+            AddressBookDb.Contacts.Remove(contactFromDb);
+            AddressBookDb.SaveChanges();
         }
 
         public void Remove(Contact contact)
@@ -59,7 +58,7 @@ namespace AddressBookDomain.DAL
 
         public IEnumerable<Contact> GetAllContactsForUser(string login)
         {
-            return _addressBookDb
+            return AddressBookDb
                 .Users
                 .Include(x => x.Contacts)
                 .First(x => string.Equals(x.Login, login, StringComparison.OrdinalIgnoreCase))
@@ -68,7 +67,7 @@ namespace AddressBookDomain.DAL
 
         public IEnumerable<Contact> GetAllContactsForUser(User user)
         {
-            return _addressBookDb
+            return AddressBookDb
                 .Users
                 .Include(x => x.Contacts)
                 .First(x => Equals(x, user))
@@ -77,7 +76,7 @@ namespace AddressBookDomain.DAL
 
         public IEnumerable<Contact> SearchByName(User user, string query)
         {
-            return _addressBookDb
+            return AddressBookDb
                 .Users
                 .Include(x => x.Contacts)
                 .First(x => Equals(x, user))
@@ -101,8 +100,8 @@ namespace AddressBookDomain.DAL
             contact.Email = newEmail ?? contact.Email;
             contact.Note = newNote ?? contact.Note;
 
-            _addressBookDb.Contacts.Update(contact);
-            _addressBookDb.SaveChanges();
+            AddressBookDb.Contacts.Update(contact);
+            AddressBookDb.SaveChanges();
         }
 
         public void Edit(Contact contact, string newName = null, string newPhoneNumber = null,
@@ -114,9 +113,9 @@ namespace AddressBookDomain.DAL
         public void Call(User user, Contact contact)
         {
             var call = new Call(contact);
-            _addressBookDb.Calls.Add(call);
+            AddressBookDb.Calls.Add(call);
             contact.Calls.Add(call);
-            _addressBookDb.SaveChanges();
+            AddressBookDb.SaveChanges();
         }
 
         public void Call(Contact contact)
@@ -126,7 +125,7 @@ namespace AddressBookDomain.DAL
 
         public Contact GetContactById(int id)
         {
-            var user = _addressBookDb.Contacts.FirstOrDefault(x => x.Id == id);
+            var user = AddressBookDb.Contacts.FirstOrDefault(x => x.Id == id);
             if (user == null) throw new UserNotFoundException();
             return user;
         }

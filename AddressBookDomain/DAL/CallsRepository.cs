@@ -8,19 +8,18 @@ namespace AddressBookDomain.DAL
 {
     public class CallsRepository : BaseRepository
     {
-        private readonly AddressBookContext _addressBookDb;
 
-        public CallsRepository(AddressBookContext addressBookContext, IHttpContextAccessor accessor) : base(addressBookContext, accessor)
+        public CallsRepository(AddressBookContext addressBookContext, IHttpContextAccessor accessor) : base(
+            addressBookContext, accessor)
         {
-            _addressBookDb = addressBookContext;
         }
 
         public IEnumerable<Call> GetCallsToContact(User user, Contact contact)
         {
-            var contactFromDb = _addressBookDb.Contacts.Include(x => x.User).First(x => x.Equals(contact));
+            var contactFromDb = AddressBookDb.Contacts.Include(x => x.User).First(x => x.Equals(contact));
 
             if (contactFromDb.User.Equals(user))
-                return _addressBookDb.Calls.Include(x => x.Contact).Where(x => Equals(x.Contact, contact));
+                return AddressBookDb.Calls.Include(x => x.Contact).Where(x => Equals(x.Contact, contact));
             return new List<Call>();
         }
 
@@ -31,7 +30,7 @@ namespace AddressBookDomain.DAL
 
         public IEnumerable<Call> GetAllUserCalls(User user)
         {
-            return _addressBookDb.Users
+            return AddressBookDb.Users
                 .Include(x => x.Contacts)
                 .ThenInclude(x => x.Calls)
                 .First(x => Equals(user, x))
@@ -46,19 +45,19 @@ namespace AddressBookDomain.DAL
 
         public Call GetCallByid(int id)
         {
-            return _addressBookDb.Calls.First(x => x.Id == id);
+            return AddressBookDb.Calls.First(x => x.Id == id);
         }
 
         public void Remove(User user, Call call)
         {
-            var contactForCall = _addressBookDb.Calls.Include(x => x.Contact).First(x => x.Equals(call)).Contact;
-            var isUserHasContact = _addressBookDb.Users.Include(x => x.Contacts).First(x => x.Equals(user)).Contacts
+            var contactForCall = AddressBookDb.Calls.Include(x => x.Contact).First(x => x.Equals(call)).Contact;
+            var isUserHasContact = AddressBookDb.Users.Include(x => x.Contacts).First(x => x.Equals(user)).Contacts
                 .Contains(contactForCall);
 
             if (!isUserHasContact)
                 return;
-            _addressBookDb.Calls.Remove(call);
-            _addressBookDb.SaveChanges();
+            AddressBookDb.Calls.Remove(call);
+            AddressBookDb.SaveChanges();
         }
 
         public void Remove(Call call)

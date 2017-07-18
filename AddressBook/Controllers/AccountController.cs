@@ -12,13 +12,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AddressBook.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController<UsersRepository>
     {
-        private readonly UsersRepository userRepo;
-
-        public AccountController(UsersRepository repo)
+        public AccountController(UsersRepository repo) : base(repo)
         {
-            userRepo = repo;
         }
 
         [HttpGet]
@@ -33,9 +30,9 @@ namespace AddressBook.Controllers
         {
             if (ModelState.IsValid)
             {
-                var salt = userRepo.GetUserByLogin(model.Login).Salt;
+                var salt = Repository.GetUserByLogin(model.Login).Salt;
                 var password = HashPassword(model.Password, Convert.FromBase64String(salt));
-                var user = userRepo.GetUserByLoginAndPassword(model.Login, password);
+                var user = Repository.GetUserByLoginAndPassword(model.Login, password);
 
                 if (user != null)
                 {
@@ -61,13 +58,13 @@ namespace AddressBook.Controllers
             {
                 try
                 {
-                    var user = userRepo.GetUserByLogin(model.Login);
+                    var user = Repository.GetUserByLogin(model.Login);
                 }
                 catch (UserNotFoundException)
                 {
                     var salt = GenerateSalt();
                     var hash = HashPassword(model.Password, salt);
-                    userRepo.Add(model.Login, hash, UserType.User, Convert.ToBase64String(salt));
+                    Repository.Add(model.Login, hash, UserType.User, Convert.ToBase64String(salt));
                     await Authenticate(model.Login);
 
                     return RedirectToAction("Index", "Home");
@@ -98,11 +95,11 @@ namespace AddressBook.Controllers
         public string HashPassword(string password, byte[] salt)
         {
             var hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                password: password,
-                salt: salt,
-                prf: KeyDerivationPrf.HMACSHA256,
-                iterationCount: 10000,
-                numBytesRequested: 256 / 8));
+                password,
+                salt,
+                KeyDerivationPrf.HMACSHA256,
+                10000,
+                256 / 8));
 
             return hashed;
         }
