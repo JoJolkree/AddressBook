@@ -1,3 +1,4 @@
+using System.Linq;
 using AddressBook.ViewModels;
 using AddressBookDomain.DAL;
 using AddressBookDomain.Domain;
@@ -24,16 +25,19 @@ namespace AddressBook.Controllers
         [HttpGet]
         public IActionResult Add()
         {
-            return View(new Contact());
+            return View(new ContactEditModel());
         }
 
         [Authorize]
         [HttpPost]
-        public IActionResult Add(Contact model)
+        public IActionResult Add(ContactEditModel model)
         {
-            Repository.Add(model.Name, model.PhoneNumber, model.Email, model.Note);
-
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                Repository.Add(model.Name, model.PhoneNumber, model.Email, model.Note);
+                return RedirectToAction("Index");
+            }
+            return View(model);
         }
 
         [Authorize]
@@ -63,19 +67,26 @@ namespace AddressBook.Controllers
             {
                 return RedirectToAction("Index");
             }
+            var contactEditModel = new ContactEditModel(contact);
+
+            return View(contactEditModel);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult Edit(ContactEditModel contact)
+        {
+            if (ModelState.IsValid)
+            {
+                var contactFromRepo = Repository.GetContactById(contact.Id);
+                Repository.Edit(contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
+                return RedirectToAction("Index");
+            }
             return View(contact);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Edit(Contact contact)
-        {
-            var contactFromRepo = Repository.GetContactById(contact.Id);
-            Repository.Edit(contactFromRepo, contact.Name, contact.PhoneNumber, contact.Email, contact.Note);
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
         public IActionResult Search(UserContactsModel model)
         {
             if (string.IsNullOrEmpty(model.SearchText))
